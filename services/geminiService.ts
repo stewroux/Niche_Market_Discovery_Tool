@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import type { FullAnalysis } from '../types';
+import type { FullAnalysis, WebAnalysisResult } from '../types';
 
 const API_KEY = process.env.API_KEY;
 
@@ -9,29 +9,28 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-const getPrompt = (problem: string): string => `
-  You are a world-class market research analyst. Your task is to use Google Search to analyze potential niche markets related to a 'customer problem' provided by the user. Your analysis must now include social media sentiment.
+const getWebPrompt = (problem: string): string => `
+  You are a world-class market research analyst specializing in web search data. Your primary task is to use Google Search to analyze search volume, competition, and existing solutions to find potential niche markets.
 
   For the given problem: "${problem}"
 
   **Execution Plan:**
-  1.  **Stream Thinking Process (Japanese):** First, stream your thinking process step-by-step as plain text in JAPANESE. This should include your search queries for general web content AND social media platforms (like X, Reddit), and your interpretation of the results.
-  2.  **Output Separator:** After you are completely done with your analysis and thinking process, output a unique separator token on its own line: \`---JSON_SEPARATOR---\`
+  1.  **Stream Thinking Process (Japanese):** First, stream your thinking process step-by-step as plain text in JAPANESE. Detail your keyword generation strategy, your assessment of search results (SERPs), and how you are evaluating the strength and relevance of competing websites.
+  2.  **Output Separator:** After you are completely done with your analysis, output a unique separator token on its own line: \`---JSON_SEPARATOR---\`
   3.  **Output Final JSON:** After the separator, output a single, valid JSON object. This must be the final part of your output.
 
   **JSON Structure Details:**
   
   - **"results"**: An array of 7 objects, each representing a potential niche market. Each object must have:
-    - "keyword": A highly relevant, specific keyword for the niche.
-    - "marketSize": Your assessment of the market size ('High', 'Medium', 'Low').
-    - "competition": Your assessment of the competition level ('High', 'Medium', 'Low').
-    - "socialSentiment": Your assessment of the public sentiment on social media ('Positive', 'Negative', 'Neutral', 'Mixed'). This must be based on search results from sites like X and Reddit.
-    - "nichePotential": A score from 1-10 indicating its potential as a niche market.
-    - "justification": A brief explanation (under 25 words) of your reasoning in Japanese, incorporating web and social media findings.
+    - "keyword": A specific keyword representing the niche.
+    - "searchVolume": Your assessment of the monthly search volume ('High', 'Medium', 'Low').
+    - "competitionLevel": Your assessment of the strength and number of direct competitors in the search results ('High', 'Medium', 'Low'). Low competition is ideal.
+    - "nichePotential": A score from 1-10, indicating potential based on a combination of high search volume and low competition.
+    - "justification": A brief explanation (under 25 words) in Japanese, based on your web search findings.
 
-  - **"references"**: An array of up to 15 reference objects. Each object must have:
-    - "url": The direct URL to a source. You must verify that it is live, publicly accessible, not a paywall/login, and does not contain error messages like "404".
-    - "title": A concise, one-sentence summary of the article's content in Japanese.
+  - **"references"**: An array of up to 15 reference objects, linking to top-ranking articles, forums, or competitor pages that informed your analysis. Each object must have:
+    - "url": The direct URL to the source. Verify it's live, public, not a paywall, and error-free.
+    - "title": A concise, one-sentence summary of the page's content in Japanese.
 
   - **"thinkingProcess"**: An object containing your detailed thinking process in two languages.
     - "ja": Your full thinking process, written in Japanese.
@@ -40,14 +39,17 @@ const getPrompt = (problem: string): string => `
   Your final output must strictly follow the sequence: [Japanese Thinking Stream] -> [Separator] -> [JSON Object].
 `;
 
+
 export const analyzeNicheMarket = async (
   problem: string,
   onThinkingUpdate: (thought: string) => void
 ): Promise<FullAnalysis> => {
   try {
+    const prompt = getWebPrompt(problem);
+
     const responseStream = await ai.models.generateContentStream({
       model: "gemini-2.5-flash",
-      contents: getPrompt(problem),
+      contents: prompt,
       config: {
         tools: [{googleSearch: {}}],
         temperature: 0.2,
@@ -81,7 +83,6 @@ export const analyzeNicheMarket = async (
       }
     }
     
-    // Clean the JSON response to remove markdown fences if they exist.
     let cleanJson = jsonBuffer.trim();
     if (cleanJson.startsWith('```json')) {
       cleanJson = cleanJson.substring(7);
@@ -101,10 +102,10 @@ export const analyzeNicheMarket = async (
         throw new Error("Invalid analysis format in API response's JSON part");
     }
 
-    // The streamed Japanese thinking process is the most "live" one, use it for the JA property.
-    // The EN property will come from the final JSON object.
+    const results: WebAnalysisResult[] = parsedJson.results;
+
     return {
-        results: parsedJson.results,
+        results: results,
         references: parsedJson.references,
         thinkingProcess: {
           ja: thinkingBuffer.trim(),

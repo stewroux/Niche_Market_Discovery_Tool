@@ -4,13 +4,13 @@ import { InputForm } from './components/InputForm';
 import { ResultsTable } from './components/ResultsTable';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { analyzeNicheMarket } from './services/geminiService';
-import type { AnalysisResult, Reference, FullAnalysis } from './types';
+import type { WebAnalysisResult, Reference, FullAnalysis } from './types';
 import { InitialStateIllustration } from './components/InitialStateIllustration';
 import { ReferencesList } from './components/ReferencesList';
 import { ThinkingProcess } from './components/ThinkingProcess';
 
 const App: React.FC = () => {
-  const [results, setResults] = useState<AnalysisResult[] | null>(null);
+  const [results, setResults] = useState<WebAnalysisResult[] | null>(null);
   const [references, setReferences] = useState<Reference[] | null>(null);
   const [thinkingProcess, setThinkingProcess] = useState<FullAnalysis['thinkingProcess'] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -50,7 +50,10 @@ const App: React.FC = () => {
       <div className="w-full max-w-5xl mx-auto">
         <Header />
         <main className="mt-8">
-          <InputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
+          <InputForm
+            onAnalyze={handleAnalysis}
+            isLoading={isLoading}
+          />
 
           {error && (
             <div className="mt-6 bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg relative animate-fade-in" role="alert">

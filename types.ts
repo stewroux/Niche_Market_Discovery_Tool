@@ -1,4 +1,4 @@
-export enum MarketScale {
+export enum SearchVolume {
   High = 'High',
   Medium = 'Medium',
   Low = 'Low',
@@ -10,29 +10,23 @@ export enum CompetitionLevel {
   Low = 'Low',
 }
 
-export enum SocialSentiment {
-  Positive = 'Positive',
-  Negative = 'Negative',
-  Neutral = 'Neutral',
-  Mixed = 'Mixed',
-}
-
 export interface Reference {
   title: string;
   url: string;
 }
 
-export interface AnalysisResult {
+export interface WebAnalysisResult {
   keyword: string;
-  marketSize: MarketScale;
-  competition: CompetitionLevel;
-  socialSentiment: SocialSentiment;
+  searchVolume: SearchVolume;
+  competitionLevel: CompetitionLevel;
   nichePotential: number;
   justification: string;
 }
 
+export type AnyAnalysisResult = WebAnalysisResult;
+
 export interface FullAnalysis {
-  results: AnalysisResult[];
+  results: WebAnalysisResult[];
   references: Reference[];
   thinkingProcess: {
     ja: string;

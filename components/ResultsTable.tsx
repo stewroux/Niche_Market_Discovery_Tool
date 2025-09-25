@@ -1,37 +1,22 @@
 import React from 'react';
-import type { AnalysisResult } from '../types';
-import { MarketScale, CompetitionLevel, SocialSentiment } from '../types';
+import type { WebAnalysisResult } from '../types';
+import { SearchVolume, CompetitionLevel } from '../types';
 import { exportToCsv } from '../utils/csvExporter';
-import { DownloadIcon, MarketIcon, CompetitionIcon, PotentialIcon, SocialIcon } from './Icons';
+import { DownloadIcon, PotentialIcon, BarChartIcon, ShieldIcon } from './Icons';
 
 interface ResultsTableProps {
-  results: AnalysisResult[];
+  results: WebAnalysisResult[];
 }
 
-const getScaleColor = (scale: MarketScale | CompetitionLevel, type: 'market' | 'competition') => {
-    const isMarket = type === 'market';
+const getWebScaleColor = (scale: SearchVolume | CompetitionLevel, type: 'volume' | 'competition') => {
+    const isVolume = type === 'volume';
     switch (scale) {
-        case MarketScale.High:
-            return isMarket ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300';
-        case MarketScale.Medium:
+        case SearchVolume.High:
+            return isVolume ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300';
+        case SearchVolume.Medium:
             return 'bg-yellow-500/20 text-yellow-300';
-        case MarketScale.Low:
-            return isMarket ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300';
-        default:
-            return 'bg-gray-700 text-gray-300';
-    }
-};
-
-const getSentimentColor = (sentiment: SocialSentiment) => {
-    switch (sentiment) {
-        case SocialSentiment.Positive:
-            return 'bg-sky-500/20 text-sky-300';
-        case SocialSentiment.Negative:
-            return 'bg-rose-500/20 text-rose-300';
-        case SocialSentiment.Mixed:
-            return 'bg-purple-500/20 text-purple-300';
-        case SocialSentiment.Neutral:
-            return 'bg-gray-500/20 text-gray-300';
+        case SearchVolume.Low:
+            return isVolume ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300';
         default:
             return 'bg-gray-700 text-gray-300';
     }
@@ -44,41 +29,27 @@ const getPotentialColor = (score: number) => {
 };
 
 const getPotentialGradient = (score: number) => {
-    const percentage = (score - 1) / 9 * 100;
-    return `linear-gradient(to right, #4ade80 ${percentage}%, #3f3f46 ${percentage}%)`;
+    return `linear-gradient(to right, #4ade80 ${score * 10}%, #3f3f46 ${score * 10}%)`;
 };
-
-const ScaleBadge: React.FC<{ scale: MarketScale | CompetitionLevel, type: 'market' | 'competition' }> = ({ scale, type }) => (
-    <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getScaleColor(scale, type)}`}>
-        {scale}
-    </span>
-);
-
-const SentimentBadge: React.FC<{ sentiment: SocialSentiment }> = ({ sentiment }) => (
-  <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getSentimentColor(sentiment)}`}>
-      {sentiment}
-  </span>
-);
-
 
 export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
     
   const handleExport = () => {
-    const dataToExport = results.map(({ keyword, marketSize, competition, socialSentiment, nichePotential, justification }) => ({
+    const filename = 'web-niche-market-analysis.csv';
+    const dataToExport = results.map(({ keyword, searchVolume, competitionLevel, nichePotential, justification }) => ({
       'キーワード': keyword,
-      '市場規模': marketSize,
-      '競合度': competition,
-      'SNSセンチメント': socialSentiment,
+      '月間検索ボリューム': searchVolume,
+      '競合サイトの強さ': competitionLevel,
       'ニッチ潜在性スコア': nichePotential,
       '分析': justification
     }));
-    exportToCsv(dataToExport, 'niche-market-analysis.csv');
+    exportToCsv(dataToExport, filename);
   };
 
   return (
     <div className="bg-gray-800/50 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
        <div className="p-4 flex justify-between items-center border-b border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-200">分析結果</h3>
+          <h3 className="text-lg font-semibold text-gray-200">市場規模調査結果</h3>
            <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-cyan-500 transition-colors"
@@ -93,19 +64,10 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             <tr>
               <th className="p-4 text-sm font-semibold text-gray-400 tracking-wider">キーワード</th>
               <th className="p-4 text-sm font-semibold text-gray-400 tracking-wider">
-                <div className="flex items-center gap-2">
-                  <MarketIcon className="w-5 h-5"/>市場規模
-                </div>
+                  <div className="flex items-center gap-2"><BarChartIcon className="w-5 h-5"/>月間検索ボリューム</div>
               </th>
               <th className="p-4 text-sm font-semibold text-gray-400 tracking-wider">
-                <div className="flex items-center gap-2">
-                  <CompetitionIcon className="w-5 h-5"/>競合度
-                </div>
-              </th>
-              <th className="p-4 text-sm font-semibold text-gray-400 tracking-wider">
-                <div className="flex items-center gap-2">
-                  <SocialIcon className="w-5 h-5"/>SNSセンチメント
-                </div>
+                  <div className="flex items-center gap-2"><ShieldIcon className="w-5 h-5"/>競合サイトの強さ</div>
               </th>
               <th className="p-4 text-sm font-semibold text-gray-400 tracking-wider">
                 <div className="flex items-center gap-2">
@@ -119,9 +81,8 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             {results.map((result, index) => (
               <tr key={index} className="hover:bg-gray-700/50 transition-colors">
                 <td className="p-4 font-medium text-white">{result.keyword}</td>
-                <td className="p-4"><ScaleBadge scale={result.marketSize} type="market" /></td>
-                <td className="p-4"><ScaleBadge scale={result.competition} type="competition" /></td>
-                <td className="p-4"><SentimentBadge sentiment={result.socialSentiment} /></td>
+                <td className="p-4"><span className={`px-3 py-1 text-sm font-semibold rounded-full ${getWebScaleColor(result.searchVolume, 'volume')}`}>{result.searchVolume}</span></td>
+                <td className="p-4"><span className={`px-3 py-1 text-sm font-semibold rounded-full ${getWebScaleColor(result.competitionLevel, 'competition')}`}>{result.competitionLevel}</span></td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         <span className={`font-bold text-lg ${getPotentialColor(result.nichePotential)}`}>{result.nichePotential}/10</span>

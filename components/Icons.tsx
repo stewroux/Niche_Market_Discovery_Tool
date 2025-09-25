@@ -27,22 +27,6 @@ export const DownloadIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
-export const MarketIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <line x1="12" y1="20" x2="12" y2="10" />
-    <line x1="18" y1="20" x2="18" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="16" />
-  </svg>
-);
-
-export const CompetitionIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M12 22V2L6 8" />
-    <path d="M18 8l-6-6" />
-    <path d="M2 12h10" />
-  </svg>
-);
-
 export const PotentialIcon: React.FC<IconProps> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="m3.85 8.62 1.42-1.42a2 2 0 0 1 2.82 0l1.41 1.41a2 2 0 0 1 0 2.82l-1.42 1.42a2 2 0 0 1-2.82 0z" />
@@ -51,12 +35,6 @@ export const PotentialIcon: React.FC<IconProps> = ({ className }) => (
     <path d="m6 18-6 6" />
     <path d="M12.01 11.99 12 12" />
   </svg>
-);
-
-export const SocialIcon: React.FC<IconProps> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
 );
 
 export const LightbulbIcon: React.FC<IconProps> = ({ className }) => (
@@ -103,4 +81,18 @@ export const BrainIcon: React.FC<IconProps> = ({ className }) => (
     <path d="M7 9.5A2.5 2.5 0 0 0 4.5 12" />
     <path d="M9.5 7A2.5 2.5 0 0 0 7 9.5" />
   </svg>
+);
+
+export const BarChartIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <line x1="12" y1="20" x2="12" y2="10" />
+      <line x1="18" y1="20" x2="18" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="16" />
+    </svg>
+);
+
+export const ShieldIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
 );
