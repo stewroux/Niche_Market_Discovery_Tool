@@ -6,6 +6,18 @@ interface ReferencesListProps {
   references: Reference[];
 }
 
+const sanitizeUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+  } catch {
+    // ignore invalid URLs
+  }
+  return '#';
+};
+
 export const ReferencesList: React.FC<ReferencesListProps> = ({ references }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -24,7 +36,7 @@ export const ReferencesList: React.FC<ReferencesListProps> = ({ references }) =>
         {displayedReferences.map((ref, index) => (
           <li key={index} className="p-4 hover:bg-gray-700/50 transition-colors">
             <a 
-              href={ref.url} 
+              href={sanitizeUrl(ref.url)} 
               target="_blank" 
               rel="noopener noreferrer" 
               className="group flex items-start gap-4"
